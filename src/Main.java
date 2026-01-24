@@ -3,23 +3,21 @@ import model.*;
 
 public class Main {
     public static void main(String[] args) {
+        Customer c = new Customer(1, "Batyrkhan", "batyr@gmail.com");
 
-        Customer customer = new Customer(1, "Batyrkhan", "batyr@gmail.com");
+        AccountBase a1 = new SavingsAccount(1, "SA-001", 1000, c);
+        AccountBase a2 = new CheckingAccount(2, "CA-001", 500, c);
 
-        AccountBase savings = new SavingsAccount(1, "SA-001", 1000, customer);
-        AccountBase checking = new CheckingAccount(2, "CA-001", 500, customer);
+        BankController bc = new BankController();
 
-        BankController controller = new BankController();
+        bc.create(a1);
+        bc.create(a2);
 
-        controller.create(savings);
-        controller.create(checking);
+        a1.deposit(200);
+        a2.withdraw(100);
 
-        savings.deposit(200);
-        checking.withdraw(100);
-
-        controller.showAll();
-
-        controller.delete(1);
+        bc.showAll();
+        bc.delete(1);
     }
 }
 

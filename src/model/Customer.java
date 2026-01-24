@@ -6,9 +6,7 @@ public class Customer {
     private String email;
 
     public Customer(int id, String name, String email) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty");
-        }
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException();
         this.id = id;
         this.name = name;
         this.email = email;
@@ -16,9 +14,5 @@ public class Customer {
 
     public int getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }
