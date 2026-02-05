@@ -167,7 +167,7 @@ getCustomer
 
 ## 📊 UML Class Diagram (Text)
 
-```
+```mermaid
 @startuml
 skinparam classAttributeIconSize 0
 
