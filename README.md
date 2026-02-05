@@ -170,99 +170,93 @@ getCustomer
 ```mermaid
 
 
-package model {
-    abstract class AccountBase {
-        - id : int
-        - accountNumber : String
-        - balance : double
-        - customer : Customer
-        + deposit(amount : double) : void
-        + getBalance() : double
-        + getAccountType() : String
-        + calculateMonthlyFee() : double
-    }
+classDiagram
 
-    class SavingsAccount {
-        + getAccountType() : String
-        + calculateMonthlyFee() : double
-    }
-
-    class CheckingAccount {
-        + getAccountType() : String
-        + calculateMonthlyFee() : double
-    }
-
-    class Customer {
-        - id : int
-        - name : String
-        - email : String
-    }
-
-    AccountBase <|-- SavingsAccount
-    AccountBase <|-- CheckingAccount
-    AccountBase --> Customer
+class AccountBase {
+  <<abstract>>
+  - int id
+  - String accountNumber
+  - double balance
+  - Customer customer
+  + deposit(double amount)
+  + double getBalance()
+  + String getAccountType()
+  + double calculateMonthlyFee()
 }
 
-package repository {
-    interface CrudRepository<T, ID> {
-        + create(entity : T)
-        + findById(id : ID)
-        + findAll()
-        + update(id : ID, entity : T)
-        + delete(id : ID)
-    }
-
-    class AccountRepository {
-        + create(AccountBase)
-        + findById(Integer)
-        + findAll()
-        + update(Integer, AccountBase)
-        + delete(Integer)
-    }
-
-    CrudRepository <|.. AccountRepository
+class SavingsAccount {
+  + String getAccountType()
+  + double calculateMonthlyFee()
 }
 
-package service {
-    interface Validatable<T> {
-        + validate(obj : T)
-    }
-
-    class AccountService {
-        - repository : CrudRepository
-        + create(AccountBase)
-        + sortByBalance()
-        + delete(id : int)
-    }
-
-    Validatable <|.. AccountService
-    AccountService --> CrudRepository
+class CheckingAccount {
+  + String getAccountType()
+  + double calculateMonthlyFee()
 }
 
-package controller {
-    class BankController {
-        - service : AccountService
-        + create(AccountBase)
-        + delete(id : int)
-    }
-
-    BankController --> AccountService
+class Customer {
+  - int id
+  - String name
+  - String email
 }
 
-package utils {
-    class DatabaseConnection {
-        + getConnection() : Connection
-    }
+AccountBase <|-- SavingsAccount
+AccountBase <|-- CheckingAccount
+AccountBase --> Customer
 
-    class ReflectionUtils {
-        + inspect(obj : Object)
-    }
-
-    class SortingUtils {
-        + byBalance(list : List<AccountBase>)
-    }
+class CrudRepository~T,ID~ {
+  <<interface>>
+  + create(T entity)
+  + findById(ID id)
+  + findAll()
+  + update(ID id, T entity)
+  + delete(ID id)
 }
 
+class AccountRepository {
+  + create(AccountBase)
+  + findById(Integer)
+  + findAll()
+  + update(Integer, AccountBase)
+  + delete(Integer)
+}
+
+CrudRepository <|.. AccountRepository
+
+class Validatable~T~ {
+  <<interface>>
+  + validate(T obj)
+}
+
+class AccountService {
+  - CrudRepository repository
+  + create(AccountBase)
+  + sortByBalance()
+  + delete(int id)
+}
+
+Validatable <|.. AccountService
+AccountService --> CrudRepository
+
+class BankController {
+  - AccountService service
+  + create(AccountBase)
+  + delete(int id)
+}
+
+BankController --> AccountService
+
+class DatabaseConnection {
+  + getConnection()
+}
+
+class ReflectionUtils {
+  + inspect(Object obj)
+}
+
+class SortingUtils {
+  + byBalance(List~AccountBase~)
+}
 
 
 ```
