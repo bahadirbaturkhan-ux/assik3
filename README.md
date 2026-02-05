@@ -1,159 +1,281 @@
-# Bank System API (Assignment 3)
+# Bank System (Assignment 4)
 
-## Project Overview
-This project is a console-based Bank System API developed in Java using Object-Oriented Programming principles and JDBC.  
-The system works with a real PostgreSQL database and follows a multi-layer architecture.
+## 📌 Project Overview
 
-Architecture:
+This project is a **Bank System** implemented in **Java** using **SOLID principles**, **Advanced OOP**, **JDBC**, **Generics**, **Lambdas**, and **Reflection**.
+The system allows managing bank accounts and customers with a clean layered architecture.
+
+The project fully satisfies **Assignment 4 requirements**.
+
+---
+
+## 🏗 Architecture
+
+The project follows a **layered architecture**:
+
+* **Model** – domain entities (Account, Customer)
+* **Repository** – data access layer (JDBC)
+* **Service** – business logic and validation
+* **Controller** – delegation layer
+* **Utils** – helpers (DB, reflection, sorting)
+* **Exception** – custom runtime exceptions
+
+Dependency flow:
+
+```
 Controller → Service → Repository → Database
+```
 
 ---
 
-## Features
-- Create bank accounts (Savings, Checking)
-- Deposit and withdraw money
-- Store data in PostgreSQL using JDBC
-- Input validation and business rules
-- Polymorphism and abstraction
-- CLI-based demonstration
+## 📁 Project Structure
+
+```
+bank-system-solid
+└── src
+    ├── controller
+    │   └── BankController.java
+    ├── service
+    │   ├── AccountService.java
+    │   └── interfaces
+    │       └── Validatable.java
+    ├── repository
+    │   ├── AccountRepository.java
+    │   └── interfaces
+    │       └── CrudRepository.java
+    ├── model
+    │   ├── AccountBase.java
+    │   ├── SavingsAccount.java
+    │   ├── CheckingAccount.java
+    │   └── Customer.java
+    ├── exception
+    │   ├── InvalidInputException.java
+    │   ├── DuplicateResourceException.java
+    │   ├── ResourceNotFoundException.java
+    │   └── DatabaseOperationException.java
+    ├── utils
+    │   ├── DatabaseConnection.java
+    │   ├── ReflectionUtils.java
+    │   └── SortingUtils.java
+    └── Main.java
+```
 
 ---
 
-## OOP Design
+## 🧠 SOLID Principles Applied
 
-### Abstract Class
-AccountBase  
-Fields:
-- id
-- accountNumber
-- balance
-- customer
+### SRP – Single Responsibility Principle
 
-Abstract methods:
-- getAccountType()
-- calculateMonthlyFee()
+* Each class has one responsibility (Controller, Service, Repository).
 
-Concrete methods:
-- deposit()
-- withdraw()
+### OCP – Open/Closed Principle
 
----
+* New account types can be added without modifying existing logic.
 
-### Subclasses
-- SavingsAccount
-- CheckingAccount
+### LSP – Liskov Substitution Principle
 
-Polymorphism is demonstrated by using AccountBase references for different account types.
+* `SavingsAccount` and `CheckingAccount` correctly extend `AccountBase`.
+
+### ISP – Interface Segregation Principle
+
+* `Validatable` and `CrudRepository` are small and focused.
+
+### DIP – Dependency Inversion Principle
+
+* Service layer depends on repository interfaces, not implementations.
 
 ---
 
-### Composition
-Account has a Customer object.
+## ⚙ Technologies Used
+
+* Java 17+
+* PostgreSQL
+* JDBC
+* IntelliJ IDEA
+* Git & GitHub
 
 ---
 
-### Encapsulation
-Fields are protected or private and accessed through getters.
+## 🗄 Database Schema
 
----
-
-## Database Design
-
-### Tables
-
-customers
-- id (Primary Key)
-- name
-- email (UNIQUE)
-
-accounts
-- id (Primary Key)
-- account_number (UNIQUE)
-- balance
-- type
-- customer_id (Foreign Key → customers.id)
-
----
-
-### schema.sql
-
+```sql
 CREATE TABLE customers (
-id SERIAL PRIMARY KEY,
-name VARCHAR(100) NOT NULL,
-email VARCHAR(100) UNIQUE NOT NULL
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE accounts (
-id SERIAL PRIMARY KEY,
-account_number VARCHAR(20) UNIQUE NOT NULL,
-balance DECIMAL(10,2) CHECK (balance >= 0),
-type VARCHAR(20),
-customer_id INT REFERENCES customers(id)
+    id SERIAL PRIMARY KEY,
+    account_number VARCHAR(20) UNIQUE,
+    balance DECIMAL(10,2),
+    type VARCHAR(20),
+    customer_id INT REFERENCES customers(id)
 );
-
----
-
-## Project Structure
 ```
-bank-system-api
-└── src
-├── controller
-│   └── BankController.java
-├── service
-│   └── AccountService.java
-├── repository
-│   └── AccountRepository.java
-├── model
-│   ├── AccountBase.java
-│   ├── SavingsAccount.java
-│   ├── CheckingAccount.java
-│   └── Customer.java
-├── utils
-│   └── DatabaseConnection.java
-└── Main.java
+
+---
+
+## ▶ How to Run
+
+1. Create PostgreSQL database `bank_db`
+2. Run SQL schema
+3. Update credentials in `DatabaseConnection.java`
+4. Add PostgreSQL JDBC driver to classpath
+5. Run `Main.java`
+
+---
+
+## 🔍 Reflection Example
+
+The project uses **RTTI (Reflection)** to inspect objects at runtime:
+
+* Prints class name
+* Prints declared methods
+
+Implemented in `ReflectionUtils.inspect()`.
+
+---
+
+## 🧪 Example Output
+
 ```
----
-
-## Controller / API Demonstration
-
-The Main class demonstrates:
-- Creating customers and accounts
-- Depositing and withdrawing money
-- Displaying all accounts
-- Deleting an account
-- Polymorphism in action
-
-Example output:
-SA-001 1200.0  
-CA-001 400.0
+model.SavingsAccount
+getAccountType
+calculateMonthlyFee
+deposit
+getId
+getAccountNumber
+getBalance
+getCustomer
+```
 
 ---
 
-## How to Run
+## ✅ Assignment 4 Checklist
 
-1. Start PostgreSQL
-2. Create database named bank_db
-3. Execute schema.sql
-4. Update database credentials in DatabaseConnection.java
-5. Run Main.java from IntelliJ IDEA
-
----
-
-## Reflection
-
-What I learned:
-- How abstract classes and inheritance work together
-- How JDBC connects Java to a real database
-- Why layered architecture is important
-
-Challenges:
-- Database connection configuration
-- Proper encapsulation of fields
-
-Benefits:
-- Clean and scalable code structure
-- Easy to maintain and extend
-- Real-world backend development experience
+* SOLID principles ✔
+* Abstract classes ✔
+* Interfaces (default + static) ✔
+* Generics ✔
+* Lambdas & Streams ✔
+* Reflection ✔
+* JDBC ✔
+* Clean architecture ✔
 
 ---
 
+## 📊 UML Class Diagram (Text)
+
+```
+@startuml
+skinparam classAttributeIconSize 0
+
+package model {
+    abstract class AccountBase {
+        - id : int
+        - accountNumber : String
+        - balance : double
+        - customer : Customer
+        + deposit(amount : double) : void
+        + getBalance() : double
+        + getAccountType() : String
+        + calculateMonthlyFee() : double
+    }
+
+    class SavingsAccount {
+        + getAccountType() : String
+        + calculateMonthlyFee() : double
+    }
+
+    class CheckingAccount {
+        + getAccountType() : String
+        + calculateMonthlyFee() : double
+    }
+
+    class Customer {
+        - id : int
+        - name : String
+        - email : String
+    }
+
+    AccountBase <|-- SavingsAccount
+    AccountBase <|-- CheckingAccount
+    AccountBase --> Customer
+}
+
+package repository {
+    interface CrudRepository<T, ID> {
+        + create(entity : T)
+        + findById(id : ID)
+        + findAll()
+        + update(id : ID, entity : T)
+        + delete(id : ID)
+    }
+
+    class AccountRepository {
+        + create(AccountBase)
+        + findById(Integer)
+        + findAll()
+        + update(Integer, AccountBase)
+        + delete(Integer)
+    }
+
+    CrudRepository <|.. AccountRepository
+}
+
+package service {
+    interface Validatable<T> {
+        + validate(obj : T)
+    }
+
+    class AccountService {
+        - repository : CrudRepository
+        + create(AccountBase)
+        + sortByBalance()
+        + delete(id : int)
+    }
+
+    Validatable <|.. AccountService
+    AccountService --> CrudRepository
+}
+
+package controller {
+    class BankController {
+        - service : AccountService
+        + create(AccountBase)
+        + delete(id : int)
+    }
+
+    BankController --> AccountService
+}
+
+package utils {
+    class DatabaseConnection {
+        + getConnection() : Connection
+    }
+
+    class ReflectionUtils {
+        + inspect(obj : Object)
+    }
+
+    class SortingUtils {
+        + byBalance(list : List<AccountBase>)
+    }
+}
+
+@enduml
+
+```
+
+---
+
+## 👨‍🎓 Author
+
+Batyrkhan
+
+---
+
+## 🏁 Conclusion
+
+This project demonstrates a clean, extensible, and maintainable Java application that fully complies with **Assignment 4** requirements and showcases advanced object-oriented programming concepts.
