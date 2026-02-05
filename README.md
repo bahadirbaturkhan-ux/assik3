@@ -168,8 +168,7 @@ getCustomer
 ## 📊 UML Class Diagram (Text)
 
 ```mermaid
-@startuml
-skinparam classAttributeIconSize 0
+
 
 package model {
     abstract class AccountBase {
@@ -264,7 +263,7 @@ package utils {
     }
 }
 
-@enduml
+
 
 ```
 
