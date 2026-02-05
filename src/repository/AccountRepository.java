@@ -1,23 +1,27 @@
 package repository;
 
 import model.AccountBase;
+import repository.interfaces.CrudRepository;
 import utils.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class AccountRepository {
+public class AccountRepository implements CrudRepository<AccountBase, Integer> {
 
-    public void create(AccountBase account) {
-        String sql = "INSERT INTO accounts(account_number, balance, type, customer_id) VALUES (?, ?, ?, ?)";
+    public void create(AccountBase a) {
+        String sql = "INSERT INTO accounts(account_number,balance,type,customer_id) VALUES (?,?,?,?)";
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement s = c.prepareStatement(sql)) {
 
-            s.setString(1, account.getAccountNumber());
-            s.setDouble(2, account.getBalance());
-            s.setString(3, account.getAccountType());
-            s.setInt(4, account.getCustomer().getId());
+            s.setString(1, a.getAccountNumber());
+            s.setDouble(2, a.getBalance());
+            s.setString(3, a.getAccountType());
+            s.setInt(4, a.getCustomer().getId());
             s.executeUpdate();
 
         } catch (SQLException e) {
@@ -25,24 +29,18 @@ public class AccountRepository {
         }
     }
 
-    public List<String> getAll() {
-        List<String> list = new ArrayList<>();
-        String sql = "SELECT * FROM accounts";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement s = c.prepareStatement(sql);
-             ResultSet r = s.executeQuery()) {
-
-            while (r.next()) {
-                list.add(r.getString("account_number") + " " + r.getDouble("balance"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return list;
+    public Optional<AccountBase> findById(Integer id) {
+        return Optional.empty();
     }
 
-    public void delete(int id) {
-        String sql = "DELETE FROM accounts WHERE id = ?";
+    public List<AccountBase> findAll() {
+        return new ArrayList<>();
+    }
+
+    public void update(Integer id, AccountBase a) {}
+
+    public void delete(Integer id) {
+        String sql = "DELETE FROM accounts WHERE id=?";
         try (Connection c = DatabaseConnection.getConnection();
              PreparedStatement s = c.prepareStatement(sql)) {
 
@@ -54,3 +52,4 @@ public class AccountRepository {
         }
     }
 }
+

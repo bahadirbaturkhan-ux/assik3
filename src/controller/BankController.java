@@ -4,17 +4,19 @@ import model.AccountBase;
 import service.AccountService;
 
 public class BankController {
-    private final AccountService service = new AccountService();
 
-    public void create(AccountBase account) {
-        service.create(account);
+    private final AccountService service;
+
+    public BankController(AccountService service) {
+        this.service = service;
     }
 
-    public void showAll() {
-        service.showAll();
+    public void create(AccountBase a) {
+        service.create(a);
     }
 
     public void delete(int id) {
         service.delete(id);
     }
 }
+

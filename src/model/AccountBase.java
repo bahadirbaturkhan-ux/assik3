@@ -1,13 +1,13 @@
 package model;
 
 public abstract class AccountBase {
-    protected int id;
-    protected String accountNumber;
-    protected double balance;
-    protected Customer customer;
 
-    public AccountBase(int id, String accountNumber, double balance, Customer customer) {
-        if (balance < 0) throw new IllegalArgumentException();
+    private int id;
+    private String accountNumber;
+    private double balance;
+    private Customer customer;
+
+    protected AccountBase(int id, String accountNumber, double balance, Customer customer) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.balance = balance;
@@ -18,13 +18,11 @@ public abstract class AccountBase {
     public abstract double calculateMonthlyFee();
 
     public void deposit(double amount) {
-        if (amount <= 0) throw new IllegalArgumentException();
         balance += amount;
     }
 
-    public void withdraw(double amount) {
-        if (amount > balance) throw new IllegalArgumentException();
-        balance -= amount;
+    public int getId() {
+        return id;
     }
 
     public String getAccountNumber() {
@@ -39,4 +37,5 @@ public abstract class AccountBase {
         return customer;
     }
 }
+
 

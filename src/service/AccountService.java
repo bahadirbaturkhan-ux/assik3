@@ -1,21 +1,38 @@
 package service;
 
 import model.AccountBase;
-import repository.AccountRepository;
+import repository.interfaces.CrudRepository;
+import service.interfaces.Validatable;
 
-public class AccountService {
-    private final AccountRepository repository = new AccountRepository();
+import java.util.Comparator;
+import java.util.List;
 
-    public void create(AccountBase account) {
-        repository.create(account);
+public class AccountService implements Validatable<AccountBase> {
+
+    private final CrudRepository<AccountBase, Integer> repository;
+
+    public AccountService(CrudRepository<AccountBase, Integer> repository) {
+        this.repository = repository;
     }
 
-    public void showAll() {
-        repository.getAll().forEach(System.out::println);
+    public void create(AccountBase a) {
+        validate(a);
+        repository.create(a);
     }
 
     public void delete(int id) {
         repository.delete(id);
     }
-}
 
+    public List<AccountBase> sortByBalance() {
+        return repository.findAll()
+                .stream()
+                .sorted(Comparator.comparingDouble(AccountBase::getBalance))
+                .toList();
+    }
+
+    public void validate(AccountBase a) {
+        notNull(a);
+        Validatable.positive(a.getBalance());
+    }
+}

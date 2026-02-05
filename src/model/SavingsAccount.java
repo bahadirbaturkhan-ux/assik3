@@ -1,8 +1,9 @@
 package model;
 
 public class SavingsAccount extends AccountBase {
-    public SavingsAccount(int id, String accountNumber, double balance, Customer customer) {
-        super(id, accountNumber, balance, customer);
+
+    public SavingsAccount(int id, String acc, double bal, Customer c) {
+        super(id, acc, bal, c);
     }
 
     public String getAccountType() {
