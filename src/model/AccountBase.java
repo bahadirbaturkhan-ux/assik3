@@ -2,24 +2,18 @@ package model;
 
 public abstract class AccountBase {
 
-    private int id;
-    private String accountNumber;
-    private double balance;
-    private Customer customer;
+    protected int id;
+    protected String accountNumber;
+    protected double balance;
 
-    protected AccountBase(int id, String accountNumber, double balance, Customer customer) {
+    public AccountBase(int id, String accountNumber, double balance) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.balance = balance;
-        this.customer = customer;
     }
 
+    public abstract boolean validate();
     public abstract String getAccountType();
-    public abstract double calculateMonthlyFee();
-
-    public void deposit(double amount) {
-        balance += amount;
-    }
 
     public int getId() {
         return id;
@@ -31,10 +25,6 @@ public abstract class AccountBase {
 
     public double getBalance() {
         return balance;
-    }
-
-    public Customer getCustomer() {
-        return customer;
     }
 }
 

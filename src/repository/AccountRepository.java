@@ -1,55 +1,80 @@
 package repository;
 
 import model.AccountBase;
+import model.SavingsAccount;
+import model.CheckingAccount;
 import repository.interfaces.CrudRepository;
-import utils.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class AccountRepository implements CrudRepository<AccountBase, Integer> {
+public class AccountRepository implements CrudRepository<AccountBase> {
 
-    public void create(AccountBase a) {
-        String sql = "INSERT INTO accounts(account_number,balance,type,customer_id) VALUES (?,?,?,?)";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement s = c.prepareStatement(sql)) {
+    private final Connection connection;
 
-            s.setString(1, a.getAccountNumber());
-            s.setDouble(2, a.getBalance());
-            s.setString(3, a.getAccountType());
-            s.setInt(4, a.getCustomer().getId());
-            s.executeUpdate();
+    public AccountRepository(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public void create(AccountBase account, int customerId) {
+        String sql = """
+                INSERT INTO accounts (account_number, balance, customer_id, type)
+                VALUES (?, ?, ?, ?)
+                """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+
+            stmt.setString(1, account.getAccountNumber());
+            stmt.setDouble(2, account.getBalance());
+            stmt.setInt(3, customerId);
+            stmt.setString(4, account.getAccountType());
+
+            stmt.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error creating account", e);
         }
     }
 
-    public Optional<AccountBase> findById(Integer id) {
-        return Optional.empty();
-    }
-
+    @Override
     public List<AccountBase> findAll() {
-        return new ArrayList<>();
-    }
+        List<AccountBase> accounts = new ArrayList<>();
 
-    public void update(Integer id, AccountBase a) {}
+        String sql = "SELECT * FROM accounts";
 
-    public void delete(Integer id) {
-        String sql = "DELETE FROM accounts WHERE id=?";
-        try (Connection c = DatabaseConnection.getConnection();
-             PreparedStatement s = c.prepareStatement(sql)) {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            s.setInt(1, id);
-            s.executeUpdate();
+            while (rs.next()) {
+                String type = rs.getString("type");
+
+                AccountBase account;
+
+                if ("SAVINGS".equalsIgnoreCase(type)) {
+                    account = new SavingsAccount(
+                            rs.getInt("id"),
+                            rs.getString("account_number"),
+                            rs.getDouble("balance")
+                    );
+                } else {
+                    account = new CheckingAccount(
+                            rs.getInt("id"),
+                            rs.getString("account_number"),
+                            rs.getDouble("balance")
+                    );
+                }
+
+                accounts.add(account);
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error reading accounts", e);
         }
+
+        return accounts;
     }
 }
+
 

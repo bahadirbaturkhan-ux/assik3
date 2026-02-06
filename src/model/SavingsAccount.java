@@ -2,16 +2,19 @@ package model;
 
 public class SavingsAccount extends AccountBase {
 
-    public SavingsAccount(int id, String acc, double bal, Customer c) {
-        super(id, acc, bal, c);
+    public SavingsAccount(int id, String accountNumber, double balance) {
+        super(id, accountNumber, balance);
     }
 
+    @Override
+    public boolean validate() {
+        return balance >= 0;
+    }
+
+    @Override
     public String getAccountType() {
         return "SAVINGS";
     }
-
-    public double calculateMonthlyFee() {
-        return 0;
-    }
 }
+
 

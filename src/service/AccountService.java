@@ -1,38 +1,48 @@
 package service;
 
 import model.AccountBase;
+import model.SavingsAccount;
+import model.CheckingAccount;
 import repository.interfaces.CrudRepository;
-import service.interfaces.Validatable;
+import exception.InvalidInputException;
 
-import java.util.Comparator;
 import java.util.List;
 
-public class AccountService implements Validatable<AccountBase> {
+public class AccountService {
 
-    private final CrudRepository<AccountBase, Integer> repository;
+    private final CrudRepository<AccountBase> repository;
 
-    public AccountService(CrudRepository<AccountBase, Integer> repository) {
+    public AccountService(CrudRepository<AccountBase> repository) {
         this.repository = repository;
     }
 
-    public void create(AccountBase a) {
-        validate(a);
-        repository.create(a);
+    public void createAccount(String type,
+                              String accountNumber,
+                              double balance,
+                              int customerId) throws InvalidInputException {
+
+        if (balance < 0) {
+            throw new InvalidInputException("Balance cannot be negative");
+        }
+
+        AccountBase account;
+
+        if ("savings".equalsIgnoreCase(type)) {
+            account = new SavingsAccount(0, accountNumber, balance);
+        } else if ("checking".equalsIgnoreCase(type)) {
+            account = new CheckingAccount(0, accountNumber, balance);
+        } else {
+            throw new InvalidInputException("Unknown account type");
+        }
+
+        if (!account.validate()) {
+            throw new InvalidInputException("Invalid account data");
+        }
+
+        repository.create(account, customerId);
     }
 
-    public void delete(int id) {
-        repository.delete(id);
-    }
-
-    public List<AccountBase> sortByBalance() {
-        return repository.findAll()
-                .stream()
-                .sorted(Comparator.comparingDouble(AccountBase::getBalance))
-                .toList();
-    }
-
-    public void validate(AccountBase a) {
-        notNull(a);
-        Validatable.positive(a.getBalance());
+    public List<AccountBase> getAllAccounts() {
+        return repository.findAll();
     }
 }

@@ -1,19 +1,24 @@
 import controller.BankController;
-import model.*;
 import repository.AccountRepository;
 import service.AccountService;
-import utils.ReflectionUtils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class Main {
-    public static void main(String[] args) {
 
-        Customer customer = new Customer(1, "Batyrkhan", "b@gmail.com");
-        AccountBase account = new SavingsAccount(1, "SA-100", 1000, customer);
+    public static void main(String[] args) throws Exception {
 
-        AccountService service = new AccountService(new AccountRepository());
+        Connection connection = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5433/assik3",
+                "postgres",
+                "4865"
+        );
+
+        AccountRepository repository = new AccountRepository(connection);
+        AccountService service = new AccountService(repository);
         BankController controller = new BankController(service);
 
-        controller.create(account);
-        ReflectionUtils.inspect(account);
+        controller.start();
     }
 }
